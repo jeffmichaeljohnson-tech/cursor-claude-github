@@ -1,29 +1,9 @@
-# Cursor × Claude × GitHub Integration
+# Always-Synced AI Dev Stack
+
+Keeps Cursor, Claude, and GitHub synchronized so AI can reason over fresh context while GitHub remains the source of truth.
 
 ## Quick Start
-
-1. Configure environment:
-```
-   cp .env.example .env
-   nano .env
-```
-
-2. Generate webhook secret:
-```
-   openssl rand -hex 32
-```
-
-3. Start services:
-```
-   docker-compose up -d
-```
-
-4. Check health:
-```
-   curl http://localhost:8000/health
-```
-
-## Next Steps
-
-- Configure GitHub webhook to point to your service
-- Monitor logs: `docker-compose logs -f`
+1) Configure git hooks: `git config core.hooksPath hooks && chmod +x hooks/pre-commit`
+2) Deploy FastAPI bridge from /server and set env vars
+3) Add GitHub webhook (push) → bridge URL
+4) Add Action secrets: CLAUDE_SYNC_URL, CLAUDE_SYNC_TOKEN

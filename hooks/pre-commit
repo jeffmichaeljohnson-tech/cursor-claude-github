@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Update memory.md with a short summary of staged changes.
+python3 scripts/summarize_commit.py > /tmp/memory_delta.md || exit 0
+
+if [ -s /tmp/memory_delta.md ]; then
+  {
+    echo
+    echo "## Commit $(date +%Y-%m-%dT%H:%M:%S%z)"
+    cat /tmp/memory_delta.md
+  } >> .context/memory.md
+fi
