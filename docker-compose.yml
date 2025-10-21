@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  sync-bridge:
+    build: ./server
+    container_name: claude-sync-api
+    ports:
+      - "8000:8000"
+    environment:
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    restart: unless-stopped
