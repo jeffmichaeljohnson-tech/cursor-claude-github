@@ -1,0 +1,32 @@
+name: Summarize Commits
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build commit context
+        run: |
+          echo "${{ github.event.head_commit.message }}" > commit.txt
+          git log -1 -p >> commit.txt
+      - name: Install requests
+        run: pip3 install requests
+      - name: Post to Claude sync bridge
+        env:
+          CLAUDE_SYNC_URL: ${{ secrets.CLAUDE_SYNC_URL }}
+          CLAUDE_SYNC_TOKEN: ${{ secrets.CLAUDE_SYNC_TOKEN }}
+        run: |
+          python3 - << 'PY'
+          import os, json, requests
+          with open('commit.txt','r') as f:
+              ctx = f.read()
+          payload = {"type":"commit","context": ctx[:100000]}
+          r = requests.post(os.environ['CLAUDE_SYNC_URL'],
+                            headers={"Authorization": f"Bearer {os.environ.get('CLAUDE_SYNC_TOKEN','')}",
+                                     "Content-Type": "application/json"},
+                            data=json.dumps(payload), timeout=30)
+          print(r.status_code, r.text)
+          PY
